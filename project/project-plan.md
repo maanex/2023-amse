@@ -26,9 +26,14 @@ Bike traffic in the city of Münster. Historical data included.
 
 ## Work Packages
 
-<!-- List of work packages ordered sequentially, each pointing to an issue with more details. -->
+1. Data Aggregation Pipeline [#1][i1]
+2. Automated tests [#2][i2]
+3. Continuous Integration [#3][i3]
+4. Data visualization [#5][i5]
+5. Deployment via GitHub Pages [#4][i4]
 
-1. Example Issue [#1][i1]
-2. ...
-
-[i1]: https://github.com/jvalue/2023-amse-template/issues/1
+[i1]: https://github.com/maanex/2023-amse/issues/1
+[i2]: https://github.com/maanex/2023-amse/issues/2
+[i3]: https://github.com/maanex/2023-amse/issues/3
+[i4]: https://github.com/maanex/2023-amse/issues/5
+[i5]: https://github.com/maanex/2023-amse/issues/4
