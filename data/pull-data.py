@@ -25,6 +25,7 @@ BIKE_URL_BASE = 'https://raw.githubusercontent.com/od-ms/radverkehr-zaehlstellen
 
 
 
+
 def clear_folder(path, match = '*'):
   [ os.remove(f) for f in glob.glob(os.path.join(path, match)) ]
 
