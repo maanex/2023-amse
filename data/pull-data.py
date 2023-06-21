@@ -7,7 +7,7 @@ import csv
 import json
 import pandas as pd
 from io import StringIO
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData, Table, Column, String, Integer
 from rich.progress import track
 
 
@@ -66,9 +66,12 @@ def parsefile_weather(filename, filter, parser):
 #
 
 def download_and_process_bike_all_months():
+  out = []
   for year in range(2020, 2022):
-    for month in track(range(1, 13), description=f'Downloading weather for {year}'):
-      download_and_process_bike(month, year)
+    for month in track(range(1, 13), description=f'Downloading bike for {year}'):
+      for entry in download_and_process_bike(month, year):
+        out.append(entry)
+  return out
 
 def download_and_merge_bike(url, statid, data):
   download_file(url, 'biketemp.csv')
@@ -96,7 +99,15 @@ def download_and_process_bike(month, year):
   data = {}
   for statid in BIKE_IDS:
     download_and_merge_bike(BIKE_URL_BASE + statid + '/' + date + '.csv', statid, data)
-  write_file(path.join(RAW_DATA_FOLDER, 'bikedata.json'), json.dumps(data))
+
+  out = []
+  for time in data.keys():
+    out.append({
+      'id': time,
+      'count': sum(data[time].values())
+    })
+
+  return out
 
 def merge_weather_data(cloudiness, extreme_wind, moisture, temperature, visibility, wind):
   vals = {}
@@ -186,8 +197,24 @@ def main(skipdownload=False):
   weather_pd = pd.read_csv(StringIO(weather_merged), sep=';')
   weather_pd.to_sql('weather', engine, if_exists='replace', index=False)
 
-  # download_and_process_bike_all_months()
+  #
 
+  bike_data = download_and_process_bike_all_months()
+
+  metadata = MetaData()
+  columns = [
+    Column('id', String, primary_key=True),
+    Column('count', Integer)
+  ]
+  table = Table('bikes', metadata, *columns)
+
+  metadata.create_all(bind=engine)
+
+  with engine.connect() as conn:
+    conn.execute(table.insert(), bike_data)
+    conn.commit()
+
+  print('Done')
 
 if __name__ == '__main__':
   main(True)
