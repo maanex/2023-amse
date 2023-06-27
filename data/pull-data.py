@@ -102,8 +102,12 @@ def download_and_process_bike(month, year):
 
   out = []
   for time in data.keys():
+    temp, hour = time.split(' ')
+    year, month, day = temp.split('-')
+    date = int(year + month + day + hour)
     out.append({
       'id': time,
+      'date': date,
       'count': sum(data[time].values())
     })
 
@@ -182,6 +186,7 @@ def main(skipdownload=False):
   metadata = MetaData()
   columns = [
     Column('id', String, primary_key=True),
+    Column('date', Integer),
     Column('count', Integer)
   ]
   table = Table('bikes', metadata, *columns)
